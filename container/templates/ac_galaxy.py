@@ -154,7 +154,7 @@ def update_main_yml(service, role_obj):
         raise FatalException()
 
     if not main_yml:
-        main_yml = [] 
+        main_yml = []
 
     # For readability, put the role name at the start of the dict
     defaults.insert(0, 'role', role_obj.name)
