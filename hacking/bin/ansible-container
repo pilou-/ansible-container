@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+from container import cli
+
+if __name__ == '__main__':
+    cli.commandline()

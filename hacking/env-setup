@@ -1,0 +1,51 @@
+# Borrowed from ansible repository
+#
+# usage: source hacking/env-setup [-q]
+#    modifies environment for running Ansible Container from checkout
+
+# Default values for shell variables we use
+PYTHONPATH=${PYTHONPATH-""}
+PATH=${PATH-""}
+PYTHON=$(which python 2>/dev/null || which python3 2>/dev/null)
+PYTHON_BIN=${PYTHON_BIN-$PYTHON}
+
+verbosity=${1-info} # Defaults to `info' if unspecified
+
+if [ "$verbosity" = -q ]; then
+    verbosity=silent
+fi
+
+# When run using source as directed, $0 gets set to bash, so we must use $BASH_SOURCE
+if [ -n "$BASH_SOURCE" ] ; then
+    HACKING_DIR=$(dirname "$BASH_SOURCE")
+elif [ $(basename -- "$0") = "env-setup" ]; then
+    HACKING_DIR=$(dirname "$0")
+# Works with ksh93 but not pdksh, have to eval to keep ash happy...
+elif [ -n "$KSH_VERSION" ] && echo $KSH_VERSION | grep -qv '^@(#)PD KSH'; then
+    eval "HACKING_DIR=\$(dirname \"\${.sh.file}\")"
+else
+    HACKING_DIR="$PWD/hacking"
+fi
+# The below is an alternative to readlink -fn which doesn't exist on OS X
+# Source: http://stackoverflow.com/a/1678636
+FULL_PATH=$($PYTHON_BIN -c "import os; print(os.path.realpath('$HACKING_DIR'))")
+export AC_HOME="$(dirname "$FULL_PATH")"
+
+PREFIX_PYTHONPATH="$AC_HOME"
+PREFIX_PATH="$AC_HOME/hacking/bin"
+
+expr "$PYTHONPATH" : "${PREFIX_PYTHONPATH}.*" > /dev/null || export PYTHONPATH="$PREFIX_PYTHONPATH:$PYTHONPATH"
+expr "$PATH" : "${PREFIX_PATH}.*" > /dev/null || export PATH="$PREFIX_PATH:$PATH"
+
+if [ "$verbosity" != silent ] ; then
+    cat <<- EOF
+	
+	Setting up Ansible Container to run out of checkout...
+	
+	PATH=$PATH
+	PYTHONPATH=$PYTHONPATH
+	
+	Done!
+	
+	EOF
+fi
