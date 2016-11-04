@@ -438,7 +438,7 @@ class Engine(BaseEngine):
                 del compose_config[host]
             if not compose_config:
                 raise AnsibleContainerNoMatchingHosts()
-        logger.debug('Orchestrated hosts: %s', orchestrated_hosts)
+        logger.debug('Orchestrated hosts: %s', ', '.join(orchestrated_hosts))
 
         for service, service_config in compose_config.items():
             if service in orchestrated_hosts:
