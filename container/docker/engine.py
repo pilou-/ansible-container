@@ -172,8 +172,8 @@ class Engine(BaseEngine):
             raise exceptions.AnsibleContainerConductorException(
                     u"Conductor container can't be found. Run "
                     u"`ansible-container build` first")
-        serialized_params = base64.encodestring(json.dumps(params))
-        serialized_config = base64.encodestring(json.dumps(config))
+        serialized_params = base64.b64encode(json.dumps(params).encode("utf-8")).decode()
+        serialized_config = base64.b64encode(json.dumps(config).encode("utf-8")).decode()
         volumes = {base_path: {'bind': '/src', 'mode': 'ro'}}
         environ = {}
         if os.environ.get('DOCKER_HOST'):
@@ -697,5 +697,5 @@ class Engine(BaseEngine):
             docker_config = docker_config['auths']
         auth_key = docker_config.get(registry_url, {}).get('auth', None)
         if auth_key:
-            username, password = base64.decodestring(auth_key).split(':', 1)
+            username, password = base64.b64decode(auth_key).split(':', 1)
         return username, password
