@@ -9,7 +9,6 @@ import os
 import re
 import subprocess
 import shlex
-import urlparse
 import tarfile
 import glob
 import shutil
@@ -21,7 +20,7 @@ try:
 except ImportError:
     raise ImportError('This engine requires you "pip install \'ruamel.yaml>=0.13.14\'" to import projects.')
 from six import iteritems
-
+from six.moves.urllib.parse import urlparse
 
 from container.exceptions import AnsibleContainerConductorException
 from container.utils import create_role_from_templates
@@ -321,7 +320,7 @@ class DockerfileParser(object):
 
         for src_spec in src_list:
             # ADD src can be a URL - look for a scheme
-            if url_and_tarball and urlparse.urlparse(src_spec).scheme in ['http', 'https']:
+            if url_and_tarball and urlparse(src_spec).scheme in ['http', 'https']:
                 task = CommentedMap()
                 if comments:
                     task['name'] = u' '.join(comments)
