@@ -576,16 +576,14 @@ class Engine(BaseEngine):
             logger.info('Starting Docker build of Ansible Container Conductor image (please be patient)...')
             # FIXME: Error out properly if build of conductor fails.
             if self.debug:
-                for line in self.client.api.build(fileobj=tarball_file,
+                for line_json in self.client.api.build(fileobj=tarball_file,
+                                                  decode=True,
                                                   custom_context=True,
                                                   tag=self.image_name_for_service('conductor'),
                                                   rm=True,
                                                   nocache=not cache):
                     try:
-                        line_json = json.loads(line)
-                        if 'stream' in line_json:
-                            line = line_json['stream']
-                        elif line_json.get('status') == 'Downloading':
+                        if line_json.get('status') == 'Downloading':
                             # skip over lines that give spammy byte-by-byte
                             # progress of downloads
                             continue
@@ -593,7 +591,7 @@ class Engine(BaseEngine):
                         pass
                     # this bypasses the fancy colorized logger for things that
                     # are just STDOUT of a process
-                    plainLogger.debug(line.rstrip())
+                    plainLogger.debug(line_json.get('stream', json.dumps(line_json)).rstrip())
                 return self.get_latest_image_id_for_service('conductor')
             else:
                 image = self.client.images.build(fileobj=tarball_file,
