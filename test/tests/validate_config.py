@@ -31,7 +31,7 @@ class TestAnsibleContainerConfig(unittest.TestCase):
         container.ENV = 'host'
         container.config.Templar = Templar
         container.config.AnsibleUnsafeText = AnsibleUnsafeText
-        self.config = get_config(self.project_path, vars_files=None, engine_name='docker')
+        self.config = get_config(self.project_path, vars_files=None, engine_name='docker', config_file='container.yml')
 
     def tearDown(self):
         pass
@@ -50,7 +50,7 @@ class TestAnsibleContainerConfig(unittest.TestCase):
         self.assertEqual(self.config.project_name, os.path.basename(self.project_path))
 
     def test_should_have_project_name_equal_cli(self):
-        config = get_config(self.project_path, vars_files=None, engine_name='docker', project_name='foo')
+        config = get_config(self.project_path, vars_files=None, engine_name='docker', project_name='foo', config_file='container.yml')
         self.assertEqual(config.project_name, 'foo')
 
     def test_should_have_project_name_equal_settings(self):
