@@ -370,10 +370,10 @@ class AnsibleContainerConductorConfig(Mapping):
             elif isinstance(value, (list, dict)):
                 # if it's a dimensional structure, it's cheaper just to serialize
                 # it, treat it like a template, and then deserialize it again
-                buffer = StringIO()
-                yaml.round_trip_dump(value, buffer)
+                stream = StringIO()
+                yaml.round_trip_dump(value, stream)
                 processed[key] = yaml.round_trip_load(
-                    templar.template(buffer.getvalue())
+                    templar.template(stream.getvalue())
                 )
             else:
                 # ints, booleans, etc.
